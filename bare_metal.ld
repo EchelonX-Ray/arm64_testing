@@ -9,29 +9,19 @@ ENTRY(my_entry_pt)
 MEMORY
 {
 	/*
-	The SPI flash memory is mapped starting at memory address 
-	0x2000_0000 in the FE310-G002 SOC.  This is the reset vector.
+	This is the memory address where this program will reside.
+	It is the reset vector.
 	*/
-	flash (rx)  : ORIGIN = 0x20000000, LENGTH = 0x1FFFFFFF
-	
-	/*
-	The actual ram onboard the SOC is mapped starting at memory
-	address 0x8000_0000.
-	*/
-	ram   (rwx) : ORIGIN = 0x80000000, LENGTH = 0x00003FFF
+	ram (rwx)  : ORIGIN = 0x00000000, LENGTH = 0x0000FFFF
 }
 
 SECTIONS
 {
 	/*
-	Force the linker to starting at address 0x2000_0000
+	Force the linker to starting at the start of memory section: ram
 	*/
-	. = 0x20000000;
+	. = 0x00000000;
 	
-	/*
-	Inform the linker that .text sections will be starting 
-	at address 0x2000_0000
-	*/
 	.text : {
 		/*
 		Make sure the .text section from src/kernel/entry.o is 
@@ -46,7 +36,7 @@ SECTIONS
 		Link the rest of the kernel's .text sections.
 		*/
 		*.o (.text);
-	} > flash
+	} > ram
 	
 	/*
 	Put in the .rodata in the flash after the actual machine code.
@@ -54,20 +44,19 @@ SECTIONS
 	.rodata : {
 		*.o (.rodata);
 		*.o (.rodata.*);
-	} > flash
+	} > ram
 	
 	/*
-	Make sure that global variables are mapped to reside starting 
-	at the beginning of the actual ram on the SOC.
+	END: Read Only Data
+	START: Writable Data
 	*/
-	. = 0x80000000;
 	.sbss : {
 		*.o (.sbss);
 	} > ram
 	.bss : {
 		*.o (.bss);
 	} > ram
-	section_KHEAP_START (NOLOAD) : {
+	section_KHEAP_START (NOLOAD) : ALIGN(0x10) {
 		/*
 		At the very end of the space reserved for global variables 
 		in the ram, link in this custom section.  This is used to
