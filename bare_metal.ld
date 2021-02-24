@@ -12,7 +12,7 @@ MEMORY
 	This is the memory address where this program will reside.
 	It is the reset vector.
 	*/
-	ram (rwx)  : ORIGIN = 0x00000000, LENGTH = 0x0000FFFF
+	ram (rwx)  : ORIGIN = 0x00080000, LENGTH = 0x0000FFFF
 }
 
 SECTIONS
@@ -20,7 +20,7 @@ SECTIONS
 	/*
 	Force the linker to starting at the start of memory section: ram
 	*/
-	. = 0x00000000;
+	. = 0x00080000;
 	
 	.text : {
 		/*

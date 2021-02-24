@@ -25,22 +25,26 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 
 
 	AUXENB = (unsigned int*)(0x3f200000 + 0x04);
+	*AUXENB = 0;
 	// Set GPIO Pin 14 to Mode: ALT0 (UART0)
-	*AUXENB |= (0x4 << 12);
+	*AUXENB |= (04u << ((14 - 10) * 3));
 	// Set GPIO Pin 15 to Mode: ALT0 (UART0)
-	*AUXENB |= (0x4 << 15);
+	*AUXENB |= (04u << ((15 - 10) * 3));
 
 	AUXENB = (unsigned int*)(0x3f200000 + 0x08);
+	*AUXENB = 0;
 	// Set GPIO Pin 23 to Mode: Output
-	*AUXENB |= (0x1 << 9);
+	*AUXENB |= (01u << ((23 - 20) * 3));
 	// Set GPIO Pin 24 to Mode: Output
-	*AUXENB |= (0x1 << 12);
-
+	*AUXENB |= (01u << ((24 - 20) * 3));
+	
+	// Turn on pin 23
 	AUXENB = (unsigned int*)(0x3f200000 + 0x1C);
-	*AUXENB |= (0x1 << 23);
-
+	*AUXENB = (1u << 23);
+	
+	// Turn off pin 24
 	AUXENB = (unsigned int*)(0x3f200000 + 0x28);
-	*AUXENB |= (0x1 << 24);
+	*AUXENB = (1u << 24);
 
 	// Enable TX on UART0
 	AUXENB = (unsigned int*)(0x3f201000 + 0x30);

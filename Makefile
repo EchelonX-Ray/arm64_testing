@@ -1,41 +1,38 @@
-TUPLE   := aarch64-linux-gnu
+TUPLE   := aarch64-unknown-linux-gnu
 CC      := $(TUPLE)-gcc
 OBJCPY  := $(TUPLE)-objcopy
 STRIP   := $(TUPLE)-strip
 CFLAGS  := -Wall -Wextra -std=c99 -O2 -march=armv8-a -mtune=cortex-a53 -mlittle-endian -ffreestanding -nostdlib -nostartfiles -Wno-unused-parameter -fno-stack-check -fno-stack-protector
-LDFLAGS := 
+LDFLAGS := -static
 GFILES  := 
 KFILES  := 
 UFILES  := 
 
 # Global Library
-#GFILES  := $(GFILES) ./src/inc/string.o
+#GFILES  := $(GFILES)
 
 # Kernel
 #  - Core (Entry/System Setup/Globals)
 KFILES  := $(KFILES) ./src/kernel/base.o
 KFILES  := $(KFILES) ./src/kernel/entry.o
-#KFILES  := $(KFILES) ./src/kernel/globals.o
-#KFILES  := $(KFILES) ./src/kernel/memalloc.o
-#KFILES  := $(KFILES) ./src/kernel/debug.o
-#  - Drivers
-#KFILES  := $(KFILES) ./src/kernel/drivers/uart.o
-#  - Idle Loop
-#KFILES  := $(KFILES) ./src/kernel/idle/idle_loop.o
-#  - Interrupt Handler
-#KFILES  := $(KFILES) ./src/kernel/interrupts/base.o
-#KFILES  := $(KFILES) ./src/kernel/interrupts/entry.o
-#KFILES  := $(KFILES) ./src/kernel/interrupts/context_switch_asm.o
-#KFILES  := $(KFILES) ./src/kernel/interrupts/context_switch.o
 
 # Programs
 #  - Init
-#UFILES  := $(UFILES) ./src/progs/init/init.o
+#UFILES  := $(UFILES)
+
+export TUPLE
+export CC
+export OBJCPY
+export STRIP
+export CFLAGS
+export LDFLAGS
+export GFILES
+export KFILES
+export UFILES
 
 .PHONY: all rebuild clean
 
-all: prog-metal.elf prog-metal.elf.strip prog-metal.elf.bin prog-metal.elf.hex prog-metal.elf.strip.bin prog-metal.elf.strip.hex \
-     prog-emu.elf   prog-emu.elf.strip   prog-emu.elf.bin   prog-emu.elf.hex   prog-emu.elf.strip.bin   prog-emu.elf.strip.hex
+all: prog-metal.elf prog-metal.elf.strip prog-metal.elf.bin prog-metal.elf.hex prog-metal.elf.strip.bin prog-metal.elf.strip.hex
 
 rebuild: clean
 	$(MAKE) all
@@ -50,10 +47,7 @@ clean:
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 prog-metal.elf: $(GFILES) $(KFILES) $(UFILES)
-	$(CC) -static $(CFLAGS) $^ -T ./bare_metal.ld $(LDFLAGS) -o $@
-
-prog-emu.elf: $(GFILES) $(KFILES) $(UFILES)
-	$(CC) -static $(CFLAGS) $^ -T ./emulation.ld $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $^ -T ./bare_metal.ld $(LDFLAGS) -o $@
 
 prog-%.elf.strip: prog-%.elf
 	$(STRIP) -s -x -R .comment -R .text.startup -R .riscv.attributes $^ -o $@
@@ -70,11 +64,11 @@ prog-%.elf.strip: prog-%.elf
 %.strip.hex: %.strip
 	$(OBJCPY) -O ihex $^ $@
 
-emu: prog-emu.elf.strip
-	qemu-system-aarch64 -kernel ./prog-emu.elf.strip -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none
+emu: prog-emu.elf.strip.bin
+	qemu-system-aarch64 -kernel ./prog-metal.elf.strip.bin -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none
 
-emu-debug: prog-emu.elf.strip
-	qemu-system-aarch64 -kernel ./prog-emu.elf.strip -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none -gdb tcp::1234 -S
+emu-debug: prog-emu.elf.strip.bin
+	qemu-system-aarch64 -kernel ./prog-metal.elf.strip.bin -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none -gdb tcp::1234 -S
 
 debug:
-	$(TUPLE)-gdb -ex "target remote localhost:1234" -ex "layout asm" -ex "tui reg general" -ex "break *0x20000000" -ex "break *0x00000000" -ex "set scheduler-locking step"
+	$(TUPLE)-gdb -ex "target remote localhost:1234" -ex "layout asm" -ex "tui reg general" -ex "break *0x00080000" -ex "break *0x00000000" -ex "set scheduler-locking step"
