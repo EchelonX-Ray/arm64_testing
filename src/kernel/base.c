@@ -20,9 +20,10 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 	//*AUXENB |= 0x00000480;
 
 	// Set Baud Rate
-	//AUXENB = (unsigned int*)(0x3f200000 + 0x24);
-	//AUXENB = (unsigned int*)(0x3f200000 + 0x28);
-
+	AUXENB = (unsigned int*)(0x3f201000 + 0x24);
+	*AUXENB = 136;
+	AUXENB = (unsigned int*)(0x3f201000 + 0x28);
+	*AUXENB = 0;
 
 	AUXENB = (unsigned int*)(0x3f200000 + 0x04);
 	*AUXENB = 0;
@@ -37,11 +38,11 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 	*AUXENB |= (01u << ((23 - 20) * 3));
 	// Set GPIO Pin 24 to Mode: Output
 	*AUXENB |= (01u << ((24 - 20) * 3));
-	
+
 	// Turn on pin 23
 	AUXENB = (unsigned int*)(0x3f200000 + 0x1C);
 	*AUXENB = (1u << 23);
-	
+
 	// Turn off pin 24
 	AUXENB = (unsigned int*)(0x3f200000 + 0x28);
 	*AUXENB = (1u << 24);
