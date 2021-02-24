@@ -18,22 +18,34 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 	//*AUXENB |= 0x00024000;
 	//AUXENB = (unsigned int*)(0x20200000 + 0x08);
 	//*AUXENB |= 0x00000480;
-	
+
 	// Set Baud Rate
 	//AUXENB = (unsigned int*)(0x3f200000 + 0x24);
 	//AUXENB = (unsigned int*)(0x3f200000 + 0x28);
-	
-	
+
+
 	AUXENB = (unsigned int*)(0x3f200000 + 0x04);
 	// Set GPIO Pin 14 to Mode: ALT0 (UART0)
 	*AUXENB |= (0x4 << 12);
 	// Set GPIO Pin 15 to Mode: ALT0 (UART0)
 	*AUXENB |= (0x4 << 15);
-	
+
+	AUXENB = (unsigned int*)(0x3f200000 + 0x08);
+	// Set GPIO Pin 23 to Mode: Output
+	*AUXENB |= (0x1 << 9);
+	// Set GPIO Pin 24 to Mode: Output
+	*AUXENB |= (0x1 << 12);
+
+	AUXENB = (unsigned int*)(0x3f200000 + 0x1C);
+	*AUXENB |= (0x1 << 23);
+
+	AUXENB = (unsigned int*)(0x3f200000 + 0x28);
+	*AUXENB |= (0x1 << 24);
+
 	// Enable TX on UART0
 	AUXENB = (unsigned int*)(0x3f201000 + 0x30);
 	*AUXENB = 0x00000100;
-	
+
 	pstr(text);
 	return 0;
 }

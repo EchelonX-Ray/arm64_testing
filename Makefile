@@ -1,4 +1,4 @@
-TUPLE   := aarch64-unknown-linux-gnu
+TUPLE   := aarch64-linux-gnu
 CC      := $(TUPLE)-gcc
 OBJCPY  := $(TUPLE)-objcopy
 STRIP   := $(TUPLE)-strip
