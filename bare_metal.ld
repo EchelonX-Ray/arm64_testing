@@ -72,14 +72,7 @@ SECTIONS
 	want the linker to guess where to put stuff.  If it doesn't know, 
 	don't include it.  If this casues a linking error, good.  I want 
 	to know that I need to fix something, rather than a silent failure 
-	that could cause hard to debug issues later.  For instance, 
-	without explicitly setting the .sbss and .bss sections above, 
-	the linker attempted to put my global variables after the 
-	machine code in the flash.  This would mean that ever access to 
-	those variables would mean read a write to the external SPI flash 
-	IC on real hardware.  I do not believe that initialized globals 
-	are possible since there is nothing to initialize them.  So I don't
-	want to, for instance, include the .data section.
+	that could cause hard to debug issues later.
 	*/
 	/DISCARD/ : {
 		* (.*);

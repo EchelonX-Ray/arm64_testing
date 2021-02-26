@@ -39,11 +39,11 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 	// Set GPIO Pin 24 to Mode: Output
 	*AUXENB |= (01u << ((24 - 20) * 3));
 
-	// Turn on pin 23
+	// Turn ON Pin 23
 	AUXENB = (unsigned int*)(0x3f200000 + 0x1C);
 	*AUXENB = (1u << 23);
 
-	// Turn off pin 24
+	// Turn OFF Pin 24
 	AUXENB = (unsigned int*)(0x3f200000 + 0x28);
 	*AUXENB = (1u << 24);
 
@@ -52,5 +52,10 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 	*AUXENB = 0x00000100;
 
 	pstr(text);
+
+	// Turn ON Pin 24
+	AUXENB = (unsigned int*)(0x3f200000 + 0x1C);
+	*AUXENB = (1u << 24);
+
 	return 0;
 }
