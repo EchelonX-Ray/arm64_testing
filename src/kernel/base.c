@@ -49,7 +49,7 @@ signed int kmain(unsigned int argc, char* argv[], char* envp[]) {
 
 	// Enable TX on UART0
 	AUXENB = (unsigned int*)(0x3f201000 + 0x30);
-	*AUXENB = 0x00000100;
+	*AUXENB = 0x00000101;
 
 	pstr(text);
 
