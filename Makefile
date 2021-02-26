@@ -64,10 +64,10 @@ prog-%.elf.strip: prog-%.elf
 %.strip.hex: %.strip
 	$(OBJCPY) -O ihex $^ $@
 
-emu: prog-emu.elf.strip.bin
+emu: prog-metal.elf.strip.bin
 	qemu-system-aarch64 -kernel ./prog-metal.elf.strip.bin -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none
 
-emu-debug: prog-emu.elf.strip.bin
+emu-debug: prog-metal.elf.strip.bin
 	qemu-system-aarch64 -kernel ./prog-metal.elf.strip.bin -m 1G -cpu cortex-a53 -M raspi3 -serial stdio -display none -gdb tcp::1234 -S
 
 debug:
